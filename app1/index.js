@@ -1,9 +1,9 @@
 const express = require('express');
-const kafka = require('kafkak-node');
+const kafka = require('kafka-node');
 const app = express();
 const sequelize = require('sequelize');
 
-app.arguments(express.json());
+app.use(express.json());
 
 const dbsAreRunning = async () => {
   const db = new sequelize(process.env.POSTGRES_URL);
@@ -13,7 +13,9 @@ const dbsAreRunning = async () => {
     password: sequelize.STRING,
   });
   db.sync({ force: true });
-  const client = new kafka.KafkaClient({ kafkaHost: KAFKA_BOOTSTRAP_SERVERS });
+  const client = new kafka.KafkaClient({
+    kafkaHost: process.env.KAFKA_BOOTSTRAP_SERVERS,
+  });
   const producer = new kafka.Producer(client);
   producer.on('ready', async () => {
     console.log('producer ready');
@@ -37,6 +39,6 @@ const dbsAreRunning = async () => {
   });
 };
 
-setTimeout(dbsAreRunning, 10000);
+setTimeout(dbsAreRunning, 1000);
 
 app.listen(process.env.PORT);
