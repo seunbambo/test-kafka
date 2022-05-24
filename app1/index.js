@@ -2,6 +2,7 @@ const express = require('express');
 const kafka = require('kafka-node');
 const app = express();
 const sequelize = require('sequelize');
+const axios = require('axios');
 
 app.use(express.json());
 
@@ -28,10 +29,20 @@ const dbsAreRunning = async () => {
           },
         ],
         async (err, data) => {
-          if (err) console.log(err);
+          if (err) console.log('Error', err);
           else {
-            await User.create(req.body);
-            res.send(req.body);
+            var config = {
+              method: 'get',
+              url: `https://ubiquity.api.blockdaemon.com/v2/${req.body.platform}/${req.body.network}/account/${req.body.address}`,
+              headers: {
+                Authorization: `Bearer bd1aPlXYQn3WMpHKpDKXnmtXGfAAhddDQc2xHZ007LRtZif`,
+              },
+            };
+            const response = await axios(config);
+            // console.log('Response', response.data);
+            res.send(response.data);
+            // await User.create(req.body);
+            // res.send(req.body);
           }
         }
       );

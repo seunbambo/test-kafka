@@ -7,11 +7,7 @@ app.use(express.json());
 
 const dbsAreRunning = async () => {
   mongoose.connect(process.env.MONGO_URL);
-  const User = new mongoose.model('user', {
-    name: String,
-    email: String,
-    password: String,
-  });
+  const User = new mongoose.model('user');
   const client = new kafka.KafkaClient({
     kafkaHost: process.env.KAFKA_BOOTSTRAP_SERVERS,
   });
